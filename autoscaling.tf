@@ -18,7 +18,7 @@ data "aws_ami" "amazon_linux" {
   owners = ["amazon", "self"]
 }
 
-resource "aws_security_group" "ec2-sg" {
+resource "aws_security_group" "sg" {
   name        = "allow-all-ec2"
   description = "allow all"
   vpc_id      = data.aws_vpc.main.id
@@ -40,7 +40,7 @@ resource "aws_security_group" "ec2-sg" {
   }
 }
 
-resource "aws_launch_configuration" "lc" {
+resource "aws_launch_configuration" "lconfiguration" {
   name          = "test_ecs"
   image_id      = data.aws_ami.amazon_linux.id
   instance_type = "t2.micro"
@@ -49,7 +49,7 @@ resource "aws_launch_configuration" "lc" {
   }
   iam_instance_profile        = aws_iam_instance_profile.ecs_service_role.name
   key_name                    = var.key_name
-  security_groups             = [aws_security_group.ec2-sg.id]
+  security_groups             = [aws_security_group.lb.id]
   associate_public_ip_address = true
   user_data                   = <<EOF
 #! /bin/bash
@@ -59,8 +59,8 @@ EOF
 }
 
 resource "aws_autoscaling_group" "asg" {
-  name                      = "test-asg"
-  launch_configuration      = aws_launch_configuration.lc.name
+  name                      = "asg"
+  launch_configuration      = aws_launch_configuration.lconfiguration.name
   min_size                  = 3
   max_size                  = 4
   desired_capacity          = 3
@@ -68,7 +68,7 @@ resource "aws_autoscaling_group" "asg" {
   health_check_grace_period = 300
   vpc_zone_identifier       = module.vpc.public_subnets
 
-  target_group_arns     = [aws_lb_target_group.lb_target_group.arn]
+  target_group_arns     = [aws_lb_target_group.target_group.arn]
   protect_from_scale_in = true
   lifecycle {
     create_before_destroy = true

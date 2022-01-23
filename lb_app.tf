@@ -32,8 +32,8 @@ resource "aws_security_group" "lb" {
   }
 }
 
-resource "aws_lb_target_group" "lb_target_group" {
-  name        = "masha-target-group"
+resource "aws_lb_target_group" "target_group" {
+  name        = "sami-target-group"
   port        = "80"
   protocol    = "HTTP"
   target_type = "instance"
@@ -54,6 +54,6 @@ resource "aws_lb_listener" "web-listener" {
   protocol          = "HTTP"
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.lb_target_group.arn
+    target_group_arn = aws_lb_target_group.target_group.arn
   }
 }
