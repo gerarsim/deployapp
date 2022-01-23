@@ -1,13 +1,13 @@
 resource "aws_ecs_cluster" "web-cluster" {
   name               = var.cluster_name
-  capacity_providers = [aws_ecs_capacity_provider.test.name]
+  capacity_providers = [aws_ecs_capacity_provider.capacity_driver.name]
   tags = {
     "env"       = "dev"
     "createdBy" = "Samir Merdoud"
   }
 }
 
-resource "aws_ecs_capacity_provider" "test" {
+resource "aws_ecs_capacity_provider" "capacity_driver" {
   name = "capacity-provider-test"
   auto_scaling_group_provider {
     auto_scaling_group_arn         = aws_autoscaling_group.asg.arn
@@ -42,7 +42,7 @@ resource "aws_ecs_service" "service" {
   }
   load_balancer {
     target_group_arn = aws_lb_target_group.lb_target_group.arn
-    container_name   = "contasami"
+    container_name   = "containersami"
     container_port   = 80
   }
   # Optional: Allow external changes without Terraform plan difference(for example ASG)

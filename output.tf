@@ -1,4 +1,4 @@
-output "alb_dns" {
+output "dns_load_balncer" {
   value = aws_lb.lb-app.dns_name
 }
 
